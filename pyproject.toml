@@ -1,0 +1,18 @@
+[project]
+name = "invoice-agent-mcp"
+version = "1.0.0"
+description = "MCP server for creating German invoices (§14 UStG) via Claude"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+invoice-agent-mcp = "server:main"
+
+[project.urls]
+Homepage = "https://invoice.alpen-huettentouren.de/landing"
+Repository = "https://github.com/samabdelkhalek-code/invoice-agent-mcp"

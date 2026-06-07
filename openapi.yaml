@@ -1,0 +1,131 @@
+openapi: 3.1.0
+info:
+  title: Invoice Agent API
+  description: |
+    Create German invoices (§14 UStG compliant) and offers via API.
+    Used by AI agents, n8n, Make.com, LangChain, and Claude via MCP.
+
+    **Get an API key:** https://invoice.alpen-huettentouren.de/landing
+  version: 1.0.0
+  contact:
+    email: hallo@lernend-fuehren.de
+
+servers:
+  - url: https://invoice.alpen-huettentouren.de
+    description: Production
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /v1/agent-task:
+    post:
+      summary: Execute an invoice agent task
+      operationId: agentTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentTaskRequest'
+            examples:
+              create_invoice:
+                summary: Create an invoice
+                value:
+                  session_id: "my-session-001"
+                  action: "create_invoice"
+                  params:
+                    customer:
+                      name: "Müller GmbH"
+                      address: "Hauptstraße 1, 10115 Berlin"
+                    items:
+                      - description: "KI-Beratung"
+                        quantity: 2
+                        unit: "Tage"
+                        unit_price: 800.0
+              list_invoices:
+                summary: List recent invoices
+                value:
+                  session_id: "my-session-001"
+                  action: "list_invoices"
+                  params:
+                    limit: 10
+      responses:
+        '200':
+          description: Task executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentTaskResponse'
+        '401':
+          description: Invalid or missing API key
+        '422':
+          description: Invalid parameters
+
+  /v1/agent-info:
+    get:
+      summary: Get agent capabilities
+      operationId: agentInfo
+      security: []
+      responses:
+        '200':
+          description: Agent capabilities
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/key-info:
+    get:
+      summary: Get API key usage info
+      operationId: keyInfo
+      responses:
+        '200':
+          description: Usage information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    type: string
+                  invoices_used:
+                    type: integer
+                  invoices_limit:
+                    type: integer
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    AgentTaskRequest:
+      type: object
+      required: [session_id, action]
+      properties:
+        session_id:
+          type: string
+          description: Unique session identifier
+        action:
+          type: string
+          enum: [create_invoice, list_invoices, get_invoice, create_offer]
+          description: Action to execute
+        params:
+          type: object
+          description: Action-specific parameters
+
+    AgentTaskResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+        result:
+          type: object
+        compute_units:
+          type: integer
+          description: Units consumed (used for AXON Protocol billing)
+        elapsed_ms:
+          type: number
