@@ -1,0 +1,24 @@
+name: invoice-agent
+description: Create German invoices (§14 UStG) and offers via natural language. Powered by AXON Protocol on SUI blockchain.
+version: 1.0.0
+author: Säm Abdelkhalek
+
+tools:
+  - name: create_invoice
+    description: Create a §14 UStG compliant German invoice as PDF
+  - name: list_invoices
+    description: List recent invoices with payment status
+  - name: create_offer
+    description: Create a German offer/quote (Angebot)
+  - name: get_invoice_status
+    description: Check if an invoice has been paid
+
+config:
+  INVOICE_API_KEY:
+    type: string
+    required: true
+    description: "API key from invoice.alpen-huettentouren.de/landing"
+  INVOICE_API_URL:
+    type: string
+    required: false
+    default: "https://invoice.alpen-huettentouren.de"

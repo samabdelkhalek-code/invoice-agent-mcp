@@ -202,4 +202,9 @@ def get_invoice_status(invoice_number: str) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    import sys
+    transport = sys.argv[1] if len(sys.argv) > 1 else "stdio"
+    if transport == "sse":
+        mcp.run(transport="sse", host="0.0.0.0", port=int(os.getenv("PORT", "8090")))
+    else:
+        mcp.run(transport="stdio")
